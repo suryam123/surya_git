@@ -1,0 +1,27 @@
+CREATE COMPUTE MODULE ITEM_DETAILS_Compute1
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		DECLARE count,i INTEGER;
+		DECLARE reference1,reference2 REFERENCE to InputRoot.XMLNSC.input.*[1];
+		DECLARE result CHARACTER;
+		SET i = 1;
+		SET count = CARDINALITY(InputRoot.XMLNSC.input.*[]);
+		WHILE LASTMOVE(reference1) DO
+			IF FIELDNAME(reference1) = 'item_details' THEN
+				SET result = InputRoot.XMLNSC.input.item_details.*[1];
+				x: WHILE LASTMOVE(reference2) DO
+					IF i = count THEN
+						LEAVE x;
+					ELSE
+						SET result = result || ',' || FIELDVALUE(reference2) ;
+						MOVE reference2 NEXTSIBLING;	
+						SET i = i +1;
+					END IF;		
+				END WHILE x;
+			END IF;
+		MOVE reference1 NEXTSIBLING;
+		END WHILE;
+		SET OutputRoot.XMLNSC.Item_Details.item = result;
+	RETURN TRUE;
+	END;
+END MODULE;
