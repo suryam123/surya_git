@@ -1,0 +1,43 @@
+CREATE COMPUTE MODULE loop_statements_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		DECLARE a,b INTEGER;
+		SET a = 0;
+
+/* The REPEAT statement processes a sequence of statements, then evaluates the condition expression.
+	 and when we use Repeat must and should use Until  */
+	
+--		x : REPEAT
+--			SET a = a + 1;
+--			SET OutputRoot.XMLNSC.result = a;
+--			UNTIL a >=4
+--		END REPEAT x;
+		
+/* The ITERATE statement stops the current iteration then directly goes to Until statement  */	
+		
+		x : REPEAT	
+			SET a = a + 1;		
+			IF a = 3 THEN
+				ITERATE x;
+			END IF;			
+			SET OutputRoot.XMLNSC.result = a;
+			UNTIL a >=4
+		END REPEAT x;
+			
+/* The Leave statement stops the entire loop then directly goes to out of loop */
+		
+--		x : REPEAT
+--			SET a = a + 1;
+--				IF a = 3 THEN
+--					ITERATE x;
+--				END IF;
+--				IF a = 4 THEN
+--					LEAVE x;
+--				END IF;
+--			SET OutputRoot.XMLNSC.result = a;
+--			UNTIL a >=5
+--		END REPEAT x;
+	
+		RETURN TRUE;
+	END;
+END MODULE;

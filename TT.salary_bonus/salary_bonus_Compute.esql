@@ -1,0 +1,50 @@
+CREATE COMPUTE MODULE salary_bonus_Compute
+	DECLARE employee_designation,employee_name,select_details,update_details CHARACTER;
+	DECLARE TA,DA,HRA,bonus,salary,update_salary INTEGER;
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		SET employee_designation = InputRoot.XMLNSC.employee_details.designation;
+		SET employee_name = InputRoot.XMLNSC.employee_details.name;
+		
+		SET select_details = 'SELECT * FROM csv.bonus WHERE name = ? AND designation = ?';
+		SET Environment.var = PASSTHRU(select_details,employee_name,employee_designation);
+		SET update_salary = Environment.var.salary;
+		IF update_salary IS NULL THEN
+			SET OutputRoot.XMLNSC.error = 'ur details are not matched try again';
+		ELSE
+		
+		IF employee_designation = 'HR' THEN
+			SET TA = (10*update_salary)/100;
+			SET DA = (10*update_salary)/100;
+			SET HRA = (10*update_salary)/100;
+			SET bonus = (10*update_salary)/100;
+			SET salary = update_salary + TA + DA + HRA + bonus;	
+			CALL update_statement();
+		
+		ELSEIF employee_designation = 'Operations' THEN
+			SET TA = (15*update_salary)/100;
+			SET DA = (15*update_salary)/100;
+			SET HRA = (15*update_salary)/100;
+			SET bonus = (15*update_salary)/100;
+			SET salary = update_salary + TA + DA + HRA + bonus;	
+			CALL update_statement();
+			
+		ELSEIF employee_designation = 'Developer' THEN
+			SET TA = (20*update_salary)/100;
+			SET DA = (20*update_salary)/100;
+			SET HRA = (20*update_salary)/100;
+			SET bonus = (20*update_salary)/100;
+			SET salary = update_salary + TA + DA + HRA + bonus;	
+			CALL update_statement();
+		END IF;
+		END IF;
+		RETURN TRUE;
+	END;
+	CREATE PROCEDURE update_statement() BEGIN
+		DECLARE update_details CHARACTER;
+		SET update_details = 'UPDATE csv.bonus SET salary = ? WHERE name ="'||employee_name||'"';
+		PASSTHRU(update_details,salary);
+		SET OutputRoot.XMLNSC.updated_salary = salary;
+	END;
+END MODULE;
